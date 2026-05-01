@@ -26,11 +26,17 @@ class QuestionnaireScreen extends StatelessWidget {
 
           return Scaffold(
             appBar: AppBar(
+              toolbarHeight: 80,
               backgroundColor: colorByType(flowType).withValues(alpha: 0.1),
               title: Text(state.flow.title),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
+              leading: InkWell(
+                child: Container(
+                  padding: EdgeInsets.all(24),
+                  child: Center(
+                    child: const Icon(Icons.arrow_back_sharp, size: 40),
+                  ),
+                ),
+                onTap: () {
                   if (state.currentStepIndex > 0) {
                     context.read<QuestionnaireCubit>().goBack();
                   } else {

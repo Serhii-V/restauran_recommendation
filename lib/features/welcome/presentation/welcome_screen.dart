@@ -19,18 +19,15 @@ class WelcomeScreen extends StatelessWidget {
             Flexible(flex: 3, child: SizedBox.expand()),
             Text(
               'Welcome',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineLarge?.copyWith(fontSize: 64),
+              style: Theme.of(context).textTheme.headlineLarge,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             Text(
               'Order safely, easily, and your way.',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppColors.secondaryText,
-                fontSize: 32,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(color: AppColors.secondaryText),
               textAlign: TextAlign.center,
             ),
             Flexible(flex: 1, child: SizedBox.expand()),

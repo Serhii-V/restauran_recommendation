@@ -42,6 +42,8 @@ class AppSecondaryButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool fullWidth;
   final bool infiniteWidth;
+  final Color? backgroundColor;
+  final Color? borderColor;
 
   const AppSecondaryButton({
     super.key,
@@ -49,6 +51,8 @@ class AppSecondaryButton extends StatelessWidget {
     required this.onPressed,
     this.fullWidth = true,
     this.infiniteWidth = true,
+    this.backgroundColor,
+    this.borderColor,
   });
 
   @override
@@ -57,14 +61,12 @@ class AppSecondaryButton extends StatelessWidget {
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primaryText,
-        side: const BorderSide(color: AppColors.border),
+        backgroundColor: backgroundColor,
+        side: BorderSide(color: borderColor ?? AppColors.border),
         minimumSize: Size(infiniteWidth ? double.infinity : 40, 64),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-      ),
+      child: Text(text, style: Theme.of(context).textTheme.labelLarge),
     );
 
     if (fullWidth) {

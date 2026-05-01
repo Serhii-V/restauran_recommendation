@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/extensions/app_layout.dart';
 import '../../../core/widgets/responsive_page_container.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_buttons.dart';
+import '../../preferences/domain/models/preference_enums.dart';
+import '../../preferences/presentation/cubit/user_preferences_cubit.dart';
+import '../../preferences/presentation/cubit/user_preferences_state.dart';
+import '../../preferences/presentation/widgets/preference_modal.dart';
 
 class FlowSelectionScreen extends StatelessWidget {
   const FlowSelectionScreen({super.key});
@@ -41,6 +47,57 @@ class FlowSelectionScreen extends StatelessWidget {
     );
   }
 
+  void _showDietaryPreferences(BuildContext context) {
+    final cubit = context.read<UserPreferencesCubit>();
+    final heightFactor = AppLayout.bottomSheetHeightFactor(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => FractionallySizedBox(
+        heightFactor: heightFactor,
+        child: PreferenceModal<DietaryPreference>(
+          title: 'Dietary Preferences',
+          options: DietaryPreference.values,
+          initialSelection: cubit.state.dietaryPreferences,
+          labelBuilder: (p) => p.label,
+          exclusivityResolver: UserPreferencesCubit.resolveExclusivity,
+          onConfirm: (selected) {
+            cubit.updatePreferences(dietaryPreferences: selected);
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showMajorAllergens(BuildContext context) {
+    final cubit = context.read<UserPreferencesCubit>();
+    final heightFactor = AppLayout.bottomSheetHeightFactor(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => FractionallySizedBox(
+        heightFactor: heightFactor,
+        child: PreferenceModal<MajorAllergen>(
+          title: 'Major Allergens',
+          options: MajorAllergen.values,
+          initialSelection: cubit.state.majorAllergens,
+          labelBuilder: (a) => a.label,
+          onConfirm: (selected) {
+            cubit.updatePreferences(majorAllergens: selected);
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,21 +117,18 @@ class FlowSelectionScreen extends StatelessWidget {
           children: [
             Text(
               'How would you like to order?',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineLarge?.copyWith(fontSize: 56),
+              style: Theme.of(context).textTheme.headlineLarge,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
               'Choose the experience that fits you right now',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: AppColors.secondaryText,
-                fontSize: 24,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 64),
+            const SizedBox(height: 56),
             _FlowOptionCard(
               icon: Image.asset(
                 'assets/icons/pick_for_me_icon.png',
@@ -112,35 +166,79 @@ class FlowSelectionScreen extends StatelessWidget {
               backgroundColor: AppColors.kidsModeFlowColor,
             ),
             const SizedBox(height: 24),
-               Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AppSecondaryButton(
-                    text: 'Dietary Preferences',
-                    onPressed: () => _showComingSoon(context),
-                    fullWidth: false,
-                    infiniteWidth: false,
+            BlocBuilder<UserPreferencesCubit, UserPreferencesState>(
+              builder: (context, state) {
+                final dietaryCount = state.dietaryPreferences.length;
+                final allergenCount = state.majorAllergens.length;
+                final buttonsSpace = AppLayout.rowButtonsSpace(context);
 
-                  ),
-                  const SizedBox(width: 16),
-                  AppSecondaryButton(
-                    text: 'Major Allergens',
-                    onPressed: () => _showComingSoon(context),
-                    fullWidth: false,
-                    infiniteWidth: false,
-                  ),
-                ],
-              ),
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () => _showDietaryPreferences(context),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.all(8),
+                        foregroundColor: AppColors.primaryText,
+                        backgroundColor: dietaryCount > 0
+                            ? const Color(0xFFF9F9F7)
+                            : null,
+                        side: BorderSide(
+                          color: allergenCount > 0
+                              ? AppColors.accent
+                              : AppColors.border,
+                        ),
+                        minimumSize: Size(40, 64),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Text(
+                        dietaryCount > 0
+                            ? 'Dietary Preferences · $dietaryCount'
+                            : 'Dietary Preferences',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                    SizedBox(width: buttonsSpace),
+                    OutlinedButton(
+                      onPressed: () => _showMajorAllergens(context),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.all(8),
+
+                        foregroundColor: AppColors.primaryText,
+                        backgroundColor: allergenCount > 0
+                            ? const Color(0xFFF9F9F7)
+                            : null,
+                        side: BorderSide(
+                          color: allergenCount > 0
+                              ? AppColors.accent
+                              : AppColors.border,
+                        ),
+                        minimumSize: Size(40, 64),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Text(
+                        allergenCount > 0
+                            ? 'Major Allergens · $allergenCount'
+                            : 'Major Allergens',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
             const SizedBox(height: 64),
             TextButton(
               onPressed: () => _showComingSoon(context),
               child: Text(
                 'Skip and browse full menu',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.accent,
-                  fontSize: 24,
-                  // decoration: TextDecoration.underline,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineMedium?.copyWith(color: AppColors.accent),
               ),
             ),
           ],
@@ -192,19 +290,9 @@ class _FlowOptionCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleLarge?.copyWith(fontSize: 32),
-                  ),
+                  Text(title, style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(fontSize: 18),
-                  ),
+                  Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
                 ],
               ),
             ),

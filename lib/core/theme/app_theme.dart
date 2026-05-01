@@ -14,7 +14,7 @@ class AppColors {
 }
 
 class AppTheme {
-  static ThemeData get light {
+  static ThemeData light(BuildContext context) {
     return ThemeData(
       useMaterial3: true,
       scaffoldBackgroundColor: AppColors.background,
@@ -25,40 +25,7 @@ class AppTheme {
         primary: AppColors.accent,
         onPrimary: Colors.white,
       ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(
-          color: AppColors.primaryText,
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          letterSpacing: -0.5,
-        ),
-        headlineMedium: TextStyle(
-          color: AppColors.primaryText,
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.5,
-        ),
-        titleLarge: TextStyle(
-          color: AppColors.primaryText,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
-        bodyLarge: TextStyle(
-          color: AppColors.primaryText,
-          fontSize: 18,
-          height: 1.5,
-        ),
-        bodyMedium: TextStyle(
-          color: AppColors.secondaryText,
-          fontSize: 16,
-          height: 1.5,
-        ),
-        labelLarge: TextStyle(
-          color: AppColors.primaryText,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+      textTheme: AppTypography.textTheme(context),
       cardTheme: CardThemeData(
         color: AppColors.card,
         elevation: 0,
@@ -76,6 +43,48 @@ class AppTheme {
           fontSize: 20,
           fontWeight: FontWeight.w600,
         ),
+      ),
+    );
+  }
+}
+
+class AppTypography {
+  static TextTheme textTheme(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width >= 600;
+
+    return TextTheme(
+      headlineLarge: TextStyle(
+        color: AppColors.primaryText,
+        fontSize: isTablet ? 64 : 32,
+        fontWeight: FontWeight.bold,
+        letterSpacing: -0.5,
+      ),
+      headlineMedium: TextStyle(
+        color: AppColors.primaryText,
+        fontSize: isTablet ? 24 : 18,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.5,
+      ),
+      titleLarge: TextStyle(
+        color: AppColors.primaryText,
+        fontSize: isTablet ? 32 : 24,
+        fontWeight: FontWeight.w600,
+      ),
+      bodyLarge: TextStyle(
+        color: AppColors.primaryText,
+        fontSize: isTablet ? 20 : 18,
+        height: 1.5,
+      ),
+      bodyMedium: TextStyle(
+        color: AppColors.secondaryText,
+        fontSize: isTablet ? 18 : 16,
+        height: 1.5,
+      ),
+      labelLarge: TextStyle(
+        color: AppColors.primaryText,
+        fontSize: isTablet ? 18 : 14,
+        fontWeight: FontWeight.w600,
       ),
     );
   }
