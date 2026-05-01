@@ -45,8 +45,12 @@ class FlowSelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 80,
         leading: InkWell(
-          child: Center(child: const Icon(Icons.arrow_back_sharp, size: 40)),
+          child: Container(
+            padding: EdgeInsets.all(24),
+            child: Center(child: const Icon(Icons.arrow_back_sharp, size: 40)),
+          ),
           onTap: () => context.pop(),
         ),
       ),
@@ -107,6 +111,26 @@ class FlowSelectionScreen extends StatelessWidget {
               onTap: () => context.push('/questionnaire/kids'),
               backgroundColor: AppColors.kidsModeFlowColor,
             ),
+            const SizedBox(height: 24),
+               Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AppSecondaryButton(
+                    text: 'Dietary Preferences',
+                    onPressed: () => _showComingSoon(context),
+                    fullWidth: false,
+                    infiniteWidth: false,
+
+                  ),
+                  const SizedBox(width: 16),
+                  AppSecondaryButton(
+                    text: 'Major Allergens',
+                    onPressed: () => _showComingSoon(context),
+                    fullWidth: false,
+                    infiniteWidth: false,
+                  ),
+                ],
+              ),
             const SizedBox(height: 64),
             TextButton(
               onPressed: () => _showComingSoon(context),

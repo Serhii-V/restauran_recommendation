@@ -16,7 +16,7 @@ class WelcomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Spacer(),
+            Flexible(flex: 3, child: SizedBox.expand()),
             Text(
               'Welcome',
               style: Theme.of(
@@ -33,35 +33,36 @@ class WelcomeScreen extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const Spacer(),
+            Flexible(flex: 1, child: SizedBox.expand()),
+
             AppPrimaryButton(
               text: 'Start Order',
               onPressed: () => context.push('/flow-selection'),
             ),
-            // const SizedBox(height: 16),
             // AppSecondaryButton(
             //   text: 'Dietary & Health',
             //   onPressed: () => context.push('/flow-selection'),
             // ),
-            const SizedBox(height: 96),
+            Flexible(flex: 1, child: SizedBox.expand()),
             const AppInfoRow(
               icon: Icons.qr_code_scanner,
               text: 'Order on Your Phone',
             ),
-            const SizedBox(height: 24),
             Text(
               'Touch, speak, or use your phone to order',
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
-            const Spacer(),
-            Text(
-              'Food suggestions only. Not medical advice',
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.center,
+            Flexible(flex: 3, child: SizedBox.expand()),
+            Flexible(
+              flex: 1,
+              child: Text(
+                'Food suggestions only. Not medical advice',
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
             ),
-            const SizedBox(height: 24),
+            Flexible(flex: 1, child: SizedBox.expand()),
           ],
         ),
       ),
