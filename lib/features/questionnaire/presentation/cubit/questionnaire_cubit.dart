@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/data/models/flow_preferences_model.dart';
+import '../../../../core/domain/repositories/app_config_repository.dart';
 import '../../domain/models/questionnaire_models.dart';
 import '../../domain/flows/questionnaire_flows.dart';
 
@@ -35,8 +37,28 @@ class QuestionnaireState extends Equatable {
 }
 
 class QuestionnaireCubit extends Cubit<QuestionnaireState> {
-  QuestionnaireCubit(String flowType)
-    : super(QuestionnaireState(flow: QuestionnaireFlows.allFlows[flowType]!));
+  QuestionnaireCubit({required this.configRepository})
+    : super(
+        QuestionnaireState(
+          flow: QuestionnaireFlows.allFlows[FlowType.kidsMode]!,
+        ),
+      ) {
+    _loadInitialPreferences();
+  }
+  final AppConfigRepository configRepository;
+
+  void _loadInitialPreferences() {
+    // configRepository.resetConfig();
+    final currentConfig = configRepository.currentConfig;
+    final QuestionnaireFlow flow =
+        QuestionnaireFlows.allFlows[currentConfig.flowType]!;
+    emit(QuestionnaireState(flow: flow));
+  }
+
+  // void initialize(FlowType flowType) {
+  //   final flow = QuestionnaireFlows.allFlows[flowType]!;
+  //   emit(QuestionnaireState(flow: flow));
+  // }
 
   void selectAnswer(String answer) {
     final currentQuestion = state.flow.questions[state.currentStepIndex];

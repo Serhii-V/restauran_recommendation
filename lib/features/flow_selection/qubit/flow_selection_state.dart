@@ -1,25 +1,29 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/models/preference_enums.dart';
+import '../../../../core/data/models/flow_preferences_model.dart';
 
-class UserPreferencesState extends Equatable {
+class FlowSelectionState extends Equatable {
   final Set<DietaryPreference> dietaryPreferences;
   final Set<MajorAllergen> majorAllergens;
+  final FlowType flowType;
 
-  const UserPreferencesState({
+  const FlowSelectionState({
     this.dietaryPreferences = const {},
     this.majorAllergens = const {},
+    this.flowType = FlowType.fullMenu,
   });
 
-  UserPreferencesState copyWith({
+  FlowSelectionState copyWith({
     Set<DietaryPreference>? dietaryPreferences,
     Set<MajorAllergen>? majorAllergens,
+    FlowType? flowType,
   }) {
-    return UserPreferencesState(
+    return FlowSelectionState(
       dietaryPreferences: dietaryPreferences ?? this.dietaryPreferences,
       majorAllergens: majorAllergens ?? this.majorAllergens,
+      flowType: flowType ?? this.flowType,
     );
   }
 
   @override
-  List<Object?> get props => [dietaryPreferences, majorAllergens];
+  List<Object?> get props => [dietaryPreferences, majorAllergens, flowType];
 }

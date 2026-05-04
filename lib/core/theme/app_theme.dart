@@ -11,6 +11,7 @@ class AppColors {
   static const Color pickForFlowColor = Color(0xFF918EF4);
   static const Color eatHealthierFlowColor = Color(0xFF5CCB96);
   static const Color kidsModeFlowColor = Color(0xFFF4B942);
+  static const Color spiceIndicatorColor = Color(0xFFE53935);
 }
 
 class AppTheme {

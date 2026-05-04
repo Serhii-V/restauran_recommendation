@@ -1,13 +1,11 @@
+import 'package:restauran_recommendation/core/data/models/flow_preferences_model.dart';
+
 import '../models/questionnaire_models.dart';
 
 class QuestionnaireFlows {
-  static const String pickForMe = 'pickForMe';
-  static const String health = 'health';
-  static const String kids = 'kids';
-
-  static final Map<String, QuestionnaireFlow> allFlows = {
-    pickForMe: const QuestionnaireFlow(
-      type: pickForMe,
+  static final Map<FlowType, QuestionnaireFlow> allFlows = {
+    FlowType.pickForMe: const QuestionnaireFlow(
+      type: FlowType.pickForMe,
       title: 'Pick For Me',
       questions: [
         Question(
@@ -27,8 +25,8 @@ class QuestionnaireFlows {
         ),
       ],
     ),
-    health: const QuestionnaireFlow(
-      type: health,
+    FlowType.eatHealthier: const QuestionnaireFlow(
+      type: FlowType.eatHealthier,
       title: 'Health Mode',
       questions: [
         Question(
@@ -53,8 +51,8 @@ class QuestionnaireFlows {
         ),
       ],
     ),
-    kids: const QuestionnaireFlow(
-      type: kids,
+    FlowType.kidsMode: const QuestionnaireFlow(
+      type: FlowType.kidsMode,
       title: 'Kids Mode',
       questions: [
         Question(
