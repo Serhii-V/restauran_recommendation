@@ -42,20 +42,20 @@ class MenuCubit extends Cubit<MenuState> {
     FlowPreferencesModel currentConfig,
     RecommendationContext recContext,
   ) {
-    List<MenuItem> filtered = List.from(state.allItems);
+    List<MenuItem> baseFiltered = List.from(state.allItems);
 
     // 1. Hard Filters: Allergens (Exclusion)
     if (currentConfig.majorAllergens.isNotEmpty) {
-      filtered = filtered.where((item) {
+      baseFiltered = baseFiltered.where((item) {
         return !item.allergens.any(
           (a) => currentConfig.majorAllergens.contains(a),
         );
       }).toList();
     }
 
-    // 2. Hard Filters: Dietary Preferences (Inclusion)
+    //Hard Filters: Dietary Preferences (Inclusion)
     if (currentConfig.dietaryPreferences.isNotEmpty) {
-      filtered = filtered.where((item) {
+      baseFiltered = baseFiltered.where((item) {
         return currentConfig.dietaryPreferences.every((pref) {
           if (item.dietaryPreferences.contains(pref)) return true;
           // Vegan counts as Vegetarian
@@ -73,24 +73,35 @@ class MenuCubit extends Cubit<MenuState> {
       }).toList();
     }
 
-    // 3. Category Filter
+    final categoriesWithItems = baseFiltered
+        .map((item) => item.category)
+        .toSet()
+        .toList();
+    categoriesWithItems.sort((a, b) => a.index.compareTo(b.index));
+
+    final List<MenuCategory> availableCats = baseFiltered.isNotEmpty
+        ? [MenuCategory.all, ...categoriesWithItems]
+        : [MenuCategory.all];
+
+    List<MenuItem> result = List.from(baseFiltered);
     if (state.selectedCategory != MenuCategory.all) {
-      filtered = filtered
+      result = result
           .where((item) => item.category == state.selectedCategory)
           .toList();
     }
 
-    // 4. Recommendation Scoring (only in recommended mode)
-    if (state.currentConfig.flowType != FlowType.fullMenu) {
-      final scoredItems = filtered.map((item) {
+    if (currentConfig.flowType != FlowType.fullMenu) {
+      final scoredItems = result.map((item) {
         return MapEntry(item, _calculateScore(item, recContext));
       }).toList();
 
       scoredItems.sort((a, b) => b.value.compareTo(a.value));
-      filtered = scoredItems.map((e) => e.key).toList();
+      result = scoredItems.map((e) => e.key).toList();
     }
 
-    emit(state.copyWith(visibleItems: filtered));
+    emit(
+      state.copyWith(visibleItems: result, availableCategories: availableCats),
+    );
   }
 
   int _calculateScore(MenuItem item, RecommendationContext context) {

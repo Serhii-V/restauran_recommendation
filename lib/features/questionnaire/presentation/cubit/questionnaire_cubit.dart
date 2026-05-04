@@ -48,17 +48,11 @@ class QuestionnaireCubit extends Cubit<QuestionnaireState> {
   final AppConfigRepository configRepository;
 
   void _loadInitialPreferences() {
-    // configRepository.resetConfig();
     final currentConfig = configRepository.currentConfig;
     final QuestionnaireFlow flow =
         QuestionnaireFlows.allFlows[currentConfig.flowType]!;
     emit(QuestionnaireState(flow: flow));
   }
-
-  // void initialize(FlowType flowType) {
-  //   final flow = QuestionnaireFlows.allFlows[flowType]!;
-  //   emit(QuestionnaireState(flow: flow));
-  // }
 
   void selectAnswer(String answer) {
     final currentQuestion = state.flow.questions[state.currentStepIndex];

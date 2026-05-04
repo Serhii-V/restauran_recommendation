@@ -5,11 +5,13 @@ import '../../domain/enums/menu_enums.dart';
 class MenuCategoryTabs extends StatelessWidget {
   final MenuCategory selectedCategory;
   final Function(MenuCategory) onCategorySelected;
+  final List<MenuCategory> categories;
 
   const MenuCategoryTabs({
     super.key,
     required this.selectedCategory,
     required this.onCategorySelected,
+    required this.categories,
   });
 
   @override
@@ -17,7 +19,7 @@ class MenuCategoryTabs extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: MenuCategory.values.map((category) {
+        children: categories.map((category) {
           final isSelected = category == selectedCategory;
           return Padding(
             padding: const EdgeInsets.only(right: 12),

@@ -92,6 +92,7 @@ class _MenuScreenContent extends StatelessWidget {
                     _buildHeader(context, state),
                     const SizedBox(height: 32),
                     MenuCategoryTabs(
+                      categories: state.availableCategories,
                       selectedCategory: state.selectedCategory,
                       onCategorySelected: (category) {
                         menuCubit.selectCategory(
