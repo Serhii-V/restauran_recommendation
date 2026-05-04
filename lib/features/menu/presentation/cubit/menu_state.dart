@@ -10,6 +10,7 @@ class MenuState extends Equatable {
   final bool isLoading;
   final String? error;
   final FlowPreferencesModel currentConfig;
+  final List<MenuCategory> availableCategories;
 
   const MenuState({
     this.allItems = const [],
@@ -18,6 +19,7 @@ class MenuState extends Equatable {
     this.isLoading = false,
     this.error,
     this.currentConfig = const FlowPreferencesModel(),
+    this.availableCategories = const [MenuCategory.all],
   });
 
   MenuState copyWith({
@@ -30,6 +32,7 @@ class MenuState extends Equatable {
     FlowType? currentFlowType,
     Set<DietaryPreference>? dietaryPreferences,
     Set<MajorAllergen>? majorAllergens,
+    List<MenuCategory>? availableCategories,
   }) {
     return MenuState(
       allItems: allItems ?? this.allItems,
@@ -38,6 +41,7 @@ class MenuState extends Equatable {
       isLoading: isLoading ?? this.isLoading,
       error: error,
       currentConfig: currentConfig ?? this.currentConfig,
+      availableCategories: availableCategories ?? this.availableCategories,
     );
   }
 
