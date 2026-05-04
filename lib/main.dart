@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'core/di/injection_container.dart' as di;
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
-import 'features/preferences/presentation/cubit/user_preferences_cubit.dart';
 
-void main() {
+import 'features/flow_selection/qubit/flow_selection_cubit.dart';
+import 'features/preferences/presentation/cubit/recommendation_context_cubit.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+  await di.init();
 
   runApp(const RestaurantApp());
 }
@@ -18,8 +22,12 @@ class RestaurantApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => UserPreferencesCubit(),
+    return MultiBlocProvider(
+      providers: [
+        // BlocProvider(create: (context) => RecommendationContextCubit()),
+        BlocProvider(create: (_) => di.sl<RecommendationContextCubit>()),
+        BlocProvider(create: (_) => di.sl<FlowSelectionCubit>()),
+      ],
       child: MaterialApp.router(
         title: 'Restaurant Recommendation',
         debugShowCheckedModeBanner: false,

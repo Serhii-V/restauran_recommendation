@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:restauran_recommendation/core/data/models/flow_preferences_model.dart';
 
 class Question extends Equatable {
   final String id;
@@ -16,7 +17,7 @@ class Question extends Equatable {
 }
 
 class QuestionnaireFlow extends Equatable {
-  final String type;
+  final FlowType type;
   final String title;
   final List<Question> questions;
 
