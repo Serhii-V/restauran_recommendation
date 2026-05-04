@@ -14,8 +14,8 @@ class MenuCubit extends Cubit<MenuState> {
   MenuCubit({required this.repository, required this.configRepository})
     : super(const MenuState());
 
-  Future<void> init(MenuMode mode, RecommendationContext recContext) async {
-    emit(state.copyWith(isLoading: true, mode: mode));
+  Future<void> init(RecommendationContext recContext) async {
+    emit(state.copyWith(isLoading: true));
     try {
       final items = await repository.getMenuItems();
       final FlowPreferencesModel currentConfig = configRepository.currentConfig;
@@ -81,7 +81,7 @@ class MenuCubit extends Cubit<MenuState> {
     }
 
     // 4. Recommendation Scoring (only in recommended mode)
-    if (state.mode == MenuMode.recommended) {
+    if (state.currentConfig.flowType != FlowType.fullMenu) {
       final scoredItems = filtered.map((item) {
         return MapEntry(item, _calculateScore(item, recContext));
       }).toList();

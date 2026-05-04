@@ -10,7 +10,6 @@ import '../../features/flow_selection/presentation/flow_selection_screen.dart';
 import '../../features/questionnaire/presentation/screens/questionnaire_screen.dart';
 
 import '../../features/menu/presentation/screens/menu_screen.dart';
-import '../../features/menu/presentation/cubit/menu_state.dart';
 import '../di/injection_container.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -40,14 +39,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/menu',
       builder: (context, state) {
-        final mode = state.extra as MenuMode? ?? MenuMode.fullMenu;
         return MultiBlocProvider(
           providers: [
             BlocProvider(create: (_) => sl<FlowSelectionCubit>()),
             BlocProvider(create: (_) => sl<MenuCubit>()),
           ],
 
-          child: MenuScreen(mode: mode),
+          child: MenuScreen(),
         );
       },
     ),

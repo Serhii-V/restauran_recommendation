@@ -3,13 +3,10 @@ import '../../../../core/data/models/flow_preferences_model.dart';
 import '../../domain/entities/menu_item.dart';
 import '../../domain/enums/menu_enums.dart';
 
-enum MenuMode { fullMenu, recommended }
-
 class MenuState extends Equatable {
   final List<MenuItem> allItems;
   final List<MenuItem> visibleItems;
   final MenuCategory selectedCategory;
-  final MenuMode mode;
   final bool isLoading;
   final String? error;
   final FlowPreferencesModel currentConfig;
@@ -18,7 +15,6 @@ class MenuState extends Equatable {
     this.allItems = const [],
     this.visibleItems = const [],
     this.selectedCategory = MenuCategory.all,
-    this.mode = MenuMode.fullMenu,
     this.isLoading = false,
     this.error,
     this.currentConfig = const FlowPreferencesModel(),
@@ -28,7 +24,6 @@ class MenuState extends Equatable {
     List<MenuItem>? allItems,
     List<MenuItem>? visibleItems,
     MenuCategory? selectedCategory,
-    MenuMode? mode,
     bool? isLoading,
     String? error,
     FlowPreferencesModel? currentConfig,
@@ -40,7 +35,6 @@ class MenuState extends Equatable {
       allItems: allItems ?? this.allItems,
       visibleItems: visibleItems ?? this.visibleItems,
       selectedCategory: selectedCategory ?? this.selectedCategory,
-      mode: mode ?? this.mode,
       isLoading: isLoading ?? this.isLoading,
       error: error,
       currentConfig: currentConfig ?? this.currentConfig,
@@ -52,7 +46,6 @@ class MenuState extends Equatable {
     allItems,
     visibleItems,
     selectedCategory,
-    mode,
     isLoading,
     error,
     currentConfig,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/data/models/flow_preferences_model.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/ui_utils.dart';
@@ -14,16 +15,14 @@ import '../../../preferences/presentation/cubit/recommendation_context_cubit.dar
 import '../../domain/enums/menu_enums.dart';
 
 class MenuScreen extends StatelessWidget {
-  final MenuMode mode;
-
-  const MenuScreen({super.key, required this.mode});
+  const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
           sl<MenuCubit>()
-            ..init(mode, context.read<RecommendationContextCubit>().state),
+            ..init(context.read<RecommendationContextCubit>().state),
       child: const _MenuScreenContent(),
     );
   }
@@ -144,14 +143,14 @@ class _MenuScreenContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        state.mode != MenuMode.fullMenu
+        state.currentConfig.flowType != FlowType.fullMenu
             ? Text(
                 'Recommended for you',
                 style: Theme.of(context).textTheme.headlineLarge,
               )
             : SizedBox.shrink(),
         const SizedBox(height: 4),
-        state.mode != MenuMode.fullMenu
+        state.currentConfig.flowType != FlowType.fullMenu
             ? Text(
                 'Based on your answers and preferences.',
                 style: Theme.of(
