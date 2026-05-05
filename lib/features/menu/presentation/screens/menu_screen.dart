@@ -11,7 +11,6 @@ import '../cubit/menu_state.dart';
 import '../widgets/menu_item_card.dart';
 import '../widgets/menu_category_tabs.dart';
 import '../widgets/menu_empty_state.dart';
-import '../../../preferences/presentation/cubit/recommendation_context_cubit.dart';
 import '../../domain/enums/menu_enums.dart';
 
 class MenuScreen extends StatelessWidget {
@@ -20,9 +19,7 @@ class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          sl<MenuCubit>()
-            ..init(context.read<RecommendationContextCubit>().state),
+      create: (context) => sl<MenuCubit>()..init(),
       child: const _MenuScreenContent(),
     );
   }
@@ -50,7 +47,10 @@ class _MenuScreenContent extends StatelessWidget {
             padding: EdgeInsets.all(24),
             child: Center(child: const Icon(Icons.home_outlined, size: 40)),
           ),
-          onTap: () => context.go('/'),
+          onTap: () {
+            menuCubit.clearFilters();
+            context.go('/');
+          },
         ),
         title: Text(
           'KioskMate',
@@ -95,20 +95,14 @@ class _MenuScreenContent extends StatelessWidget {
                       categories: state.availableCategories,
                       selectedCategory: state.selectedCategory,
                       onCategorySelected: (category) {
-                        menuCubit.selectCategory(
-                          category,
-                          context.read<RecommendationContextCubit>().state,
-                        );
+                        menuCubit.selectCategory(category);
                       },
                     ),
                     const SizedBox(height: 32),
                     if (state.visibleItems.isEmpty)
                       MenuEmptyState(
                         onClearFilters: () {
-                          menuCubit.selectCategory(
-                            MenuCategory.all,
-                            context.read<RecommendationContextCubit>().state,
-                          );
+                          menuCubit.selectCategory(MenuCategory.all);
                         },
                       )
                     else

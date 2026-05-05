@@ -37,6 +37,8 @@ class QuestionnaireState extends Equatable {
 }
 
 class QuestionnaireCubit extends Cubit<QuestionnaireState> {
+  final AppConfigRepository configRepository;
+
   QuestionnaireCubit({required this.configRepository})
     : super(
         QuestionnaireState(
@@ -45,7 +47,6 @@ class QuestionnaireCubit extends Cubit<QuestionnaireState> {
       ) {
     _loadInitialPreferences();
   }
-  final AppConfigRepository configRepository;
 
   void _loadInitialPreferences() {
     final currentConfig = configRepository.currentConfig;
@@ -67,6 +68,10 @@ class QuestionnaireCubit extends Cubit<QuestionnaireState> {
         ),
       );
     } else {
+      final finalConfig = configRepository.currentConfig.copyWith(
+        answers: newAnswers,
+      );
+      configRepository.setConfig(finalConfig);
       emit(state.copyWith(answers: newAnswers, isCompleted: true));
     }
   }

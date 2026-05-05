@@ -29,9 +29,6 @@ class MenuState extends Equatable {
     bool? isLoading,
     String? error,
     FlowPreferencesModel? currentConfig,
-    FlowType? currentFlowType,
-    Set<DietaryPreference>? dietaryPreferences,
-    Set<MajorAllergen>? majorAllergens,
     List<MenuCategory>? availableCategories,
   }) {
     return MenuState(
@@ -53,5 +50,6 @@ class MenuState extends Equatable {
     isLoading,
     error,
     currentConfig,
+    availableCategories,
   ];
 }

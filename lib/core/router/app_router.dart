@@ -41,7 +41,7 @@ final appRouter = GoRouter(
       builder: (context, state) {
         return MultiBlocProvider(
           providers: [
-            BlocProvider(create: (_) => sl<FlowSelectionCubit>()),
+            // BlocProvider(create: (_) => sl<FlowSelectionCubit>()),
             BlocProvider(create: (_) => sl<MenuCubit>()),
           ],
 

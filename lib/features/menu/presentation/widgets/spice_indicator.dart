@@ -14,9 +14,6 @@ class SpiceIndicator extends StatelessWidget {
       case SpiceLevel.none:
         activeBars = 0;
         break;
-      case SpiceLevel.mild:
-        activeBars = 1;
-        break;
       case SpiceLevel.medium:
         activeBars = 2;
         break;
@@ -27,7 +24,7 @@ class SpiceIndicator extends StatelessWidget {
 
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: List.generate(3, (index) {
+      children: List.generate(2, (index) {
         final isActive = index < activeBars;
         return Container(
           width: 16,

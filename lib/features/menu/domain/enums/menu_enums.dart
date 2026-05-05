@@ -10,9 +10,13 @@ enum MenuCategory {
   const MenuCategory(this.label);
 }
 
-enum SpiceLevel { none, mild, medium, hot }
+enum SpiceLevel { none, medium, hot }
 
-enum PortionSize { snack, light, regular, filling, feast }
+enum PortionSize {
+  small,
+  regular,
+  large,
+} //snack, light, regular, filling, feast }
 
 enum MealStyle { classic, adventurous }
 
