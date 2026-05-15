@@ -4,27 +4,36 @@ class FlowPreferencesModel extends Equatable {
   final Set<DietaryPreference> dietaryPreferences;
   final Set<MajorAllergen> majorAllergens;
   final FlowType flowType;
+  final Map<String, String> answers;
 
   const FlowPreferencesModel({
     this.dietaryPreferences = const {},
     this.majorAllergens = const {},
     this.flowType = FlowType.fullMenu,
+    this.answers = const {},
   });
 
   FlowPreferencesModel copyWith({
     Set<DietaryPreference>? dietaryPreferences,
     Set<MajorAllergen>? majorAllergens,
     FlowType? flowType,
+    Map<String, String>? answers,
   }) {
     return FlowPreferencesModel(
       dietaryPreferences: dietaryPreferences ?? this.dietaryPreferences,
       majorAllergens: majorAllergens ?? this.majorAllergens,
       flowType: flowType ?? this.flowType,
+      answers: answers ?? this.answers,
     );
   }
 
   @override
-  List<Object?> get props => [dietaryPreferences, majorAllergens, flowType];
+  List<Object?> get props => [
+    dietaryPreferences,
+    majorAllergens,
+    flowType,
+    answers,
+  ];
 }
 
 enum DietaryPreference {

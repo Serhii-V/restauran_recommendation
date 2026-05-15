@@ -11,4 +11,9 @@ class MenuRepositoryImpl implements MenuRepository {
   Future<List<MenuItem>> getMenuItems() async {
     return await localDataSource.getMenuItems();
   }
+
+  @override
+  Future<MenuItem?> getMenuItemById(String id) async {
+    return await localDataSource.getMenuItemById(id);
+  }
 }

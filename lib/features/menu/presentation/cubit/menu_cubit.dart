@@ -1,61 +1,85 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/data/models/flow_preferences_model.dart';
 import '../../../../core/domain/repositories/app_config_repository.dart';
+import '../../domain/usecases/recommendation_service.dart';
 import 'menu_state.dart';
 import '../../domain/entities/menu_item.dart';
 import '../../domain/enums/menu_enums.dart';
 import '../../domain/repositories/menu_repository.dart';
-import '../../../preferences/presentation/cubit/recommendation_context_cubit.dart';
 
 class MenuCubit extends Cubit<MenuState> {
   final MenuRepository repository;
   final AppConfigRepository configRepository;
+  final RecommendationService recommendationService;
 
-  MenuCubit({required this.repository, required this.configRepository})
-    : super(const MenuState());
+  MenuCubit({
+    required this.repository,
+    required this.configRepository,
+    required this.recommendationService,
+  }) : super(const MenuState());
 
-  Future<void> init(RecommendationContext recContext) async {
+  Future<void> init() async {
     emit(state.copyWith(isLoading: true));
     try {
       final items = await repository.getMenuItems();
       final FlowPreferencesModel currentConfig = configRepository.currentConfig;
+      final isExpanded = currentConfig.flowType == FlowType.fullMenu;
+
       emit(
         state.copyWith(
           allItems: items,
           isLoading: false,
           currentConfig: currentConfig,
+          isExpanded: isExpanded,
         ),
       );
-      applyFilters(currentConfig, recContext);
+
+      applyFilters();
     } catch (e) {
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
 
-  void selectCategory(MenuCategory category, RecommendationContext recContext) {
-    final FlowPreferencesModel currentConfig = configRepository.currentConfig;
-    emit(state.copyWith(selectedCategory: category));
-    applyFilters(currentConfig, recContext);
+  void selectCategory(MenuCategory category) {
+    final latestConfig = configRepository.currentConfig;
+
+    emit(
+      state.copyWith(selectedCategory: category, currentConfig: latestConfig),
+    );
+    applyFilters();
   }
 
-  void applyFilters(
-    FlowPreferencesModel currentConfig,
-    RecommendationContext recContext,
-  ) {
-    List<MenuItem> baseFiltered = List.from(state.allItems);
+  void clearFilters() {
+    configRepository.resetConfig();
+    emit(
+      state.copyWith(
+        selectedCategory: MenuCategory.all,
+        currentConfig: configRepository.currentConfig,
+      ),
+    );
+    applyFilters();
+  }
 
-    // 1. Hard Filters: Allergens (Exclusion)
+  void toggleExpand() {
+    emit(state.copyWith(isExpanded: !state.isExpanded));
+  }
+
+  void applyFilters() {
+    final currentConfig = configRepository.currentConfig;
+    List<MenuItem> filtered = List.from(state.allItems);
+
+    // Step 1: Exclusion (Allergens)
     if (currentConfig.majorAllergens.isNotEmpty) {
-      baseFiltered = baseFiltered.where((item) {
+      filtered = filtered.where((item) {
         return !item.allergens.any(
           (a) => currentConfig.majorAllergens.contains(a),
         );
       }).toList();
     }
 
-    //Hard Filters: Dietary Preferences (Inclusion)
+    // Step 2: Inclusion (Dietary Preferences)
     if (currentConfig.dietaryPreferences.isNotEmpty) {
-      baseFiltered = baseFiltered.where((item) {
+      filtered = filtered.where((item) {
         return currentConfig.dietaryPreferences.every((pref) {
           if (item.dietaryPreferences.contains(pref)) return true;
           // Vegan counts as Vegetarian
@@ -73,128 +97,46 @@ class MenuCubit extends Cubit<MenuState> {
       }).toList();
     }
 
-    final categoriesWithItems = baseFiltered
+    // Step 3: recommendation service ranking (if not full menu flow)
+    if (currentConfig.flowType != FlowType.fullMenu) {
+      filtered = recommendationService.rankItems(
+        items: filtered,
+        currentConfig: currentConfig,
+      );
+    }
+
+    // Step 4: Category Calculation (Identify available categories)
+    final categoriesWithItems = filtered
         .map((item) => item.category)
         .toSet()
         .toList();
     categoriesWithItems.sort((a, b) => a.index.compareTo(b.index));
 
-    final List<MenuCategory> availableCats = baseFiltered.isNotEmpty
-        ? [MenuCategory.all, ...categoriesWithItems]
-        : [MenuCategory.all];
+    final List<MenuCategory> availableCats = [
+      MenuCategory.all,
+      ...categoriesWithItems,
+    ];
 
-    List<MenuItem> result = List.from(baseFiltered);
-    if (state.selectedCategory != MenuCategory.all) {
-      result = result
-          .where((item) => item.category == state.selectedCategory)
+    // Step 5: Category Selection (Apply category filter and reset if needed)
+    MenuCategory categoryToApply = state.selectedCategory;
+    if (categoryToApply != MenuCategory.all &&
+        !categoriesWithItems.contains(categoryToApply)) {
+      categoryToApply = MenuCategory.all;
+    }
+
+    if (categoryToApply != MenuCategory.all) {
+      filtered = filtered
+          .where((item) => item.category == categoryToApply)
           .toList();
     }
 
-    if (currentConfig.flowType != FlowType.fullMenu) {
-      final scoredItems = result.map((item) {
-        return MapEntry(item, _calculateScore(item, recContext));
-      }).toList();
-
-      scoredItems.sort((a, b) => b.value.compareTo(a.value));
-      result = scoredItems.map((e) => e.key).toList();
-    }
-
     emit(
-      state.copyWith(visibleItems: result, availableCategories: availableCats),
+      state.copyWith(
+        visibleItems: filtered,
+        availableCategories: availableCats,
+        selectedCategory: categoryToApply,
+        currentConfig: currentConfig,
+      ),
     );
-  }
-
-  int _calculateScore(MenuItem item, RecommendationContext context) {
-    int score = 0;
-    final answers = context.answers;
-
-    if (context.flowType == FlowType.pickForMe) {
-      if (answers['p1'] == 'Classic' && item.mealStyle == MealStyle.classic) {
-        score += 3;
-      }
-      if (answers['p1'] == 'Adventurous' &&
-          item.mealStyle == MealStyle.adventurous) {
-        score += 3;
-      }
-      if (answers['p2'] == 'Yes' &&
-          (item.spiceLevel == SpiceLevel.medium ||
-              item.spiceLevel == SpiceLevel.hot)) {
-        score += 3;
-      }
-      if (answers['p2'] == 'A little' && item.spiceLevel == SpiceLevel.mild) {
-        score += 3;
-      }
-      if (answers['p2'] == 'No' && item.spiceLevel == SpiceLevel.none) {
-        score += 3;
-      }
-
-      if (answers['p3'] == 'Pick something safe' &&
-          item.mealStyle == MealStyle.classic &&
-          item.spiceLevel == SpiceLevel.none) {
-        score += 2;
-      }
-    }
-
-    if (context.flowType == FlowType.eatHealthier) {
-      if (answers['h1'] == 'High protein' &&
-          item.healthGoals.contains(HealthGoal.highProtein)) {
-        score += 4;
-      }
-      if (answers['h1'] == 'Low sugar' &&
-          item.healthGoals.contains(HealthGoal.lowSugar)) {
-        score += 4;
-      }
-      if (answers['h1'] == 'Balanced' &&
-          item.healthGoals.contains(HealthGoal.balanced)) {
-        score += 4;
-      }
-      if (answers['h1'] == 'Just something tasty' &&
-          item.healthGoals.contains(HealthGoal.tasty)) {
-        score += 2;
-      }
-
-      if (answers['h2'] == 'Light' &&
-          (item.portionSize == PortionSize.light ||
-              item.portionSize == PortionSize.snack)) {
-        score += 3;
-      }
-      if (answers['h2'] == 'Filling' &&
-          (item.portionSize == PortionSize.filling ||
-              item.portionSize == PortionSize.regular)) {
-        score += 3;
-      }
-
-      if (answers['h3'] == 'Yes, quick pick' &&
-          item.prepTime == PrepTime.quick) {
-        score += 3;
-      }
-    }
-
-    if (context.flowType == FlowType.kidsMode) {
-      if (answers['k1'] == 'Simple & Mild' &&
-          item.kidsFriendly &&
-          item.spiceLevel == SpiceLevel.none) {
-        score += 4;
-      }
-      if (answers['k1'] == 'Fun & Tasty' &&
-          item.kidsFriendly &&
-          item.healthGoals.contains(HealthGoal.tasty)) {
-        score += 4;
-      }
-      if (answers['k1'] == 'Light & Fresh' &&
-          (item.portionSize == PortionSize.light ||
-              item.healthGoals.contains(HealthGoal.balanced))) {
-        score += 3;
-      }
-
-      if (answers['k2'] == 'No spice' && item.spiceLevel == SpiceLevel.none) {
-        score += 3;
-      }
-      if (answers['k2'] == 'A little' && item.spiceLevel == SpiceLevel.mild) {
-        score += 3;
-      }
-    }
-
-    return score;
   }
 }
