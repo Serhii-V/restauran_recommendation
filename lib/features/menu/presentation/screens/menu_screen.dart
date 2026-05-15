@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/data/models/flow_preferences_model.dart';
-import '../../../../core/di/injection_container.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/ui_utils.dart';
 import '../../../flow_selection/qubit/flow_selection_cubit.dart';
+import '../../domain/entities/menu_item.dart';
 import '../cubit/menu_cubit.dart';
 import '../cubit/menu_state.dart';
 import '../widgets/menu_item_card.dart';
@@ -18,10 +18,7 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<MenuCubit>()..init(),
-      child: const _MenuScreenContent(),
-    );
+    return const _MenuScreenContent();
   }
 }
 
@@ -81,6 +78,13 @@ class _MenuScreenContent extends StatelessWidget {
                   ? 2
                   : 3;
 
+              final bool isRecommendationFlow =
+                  state.currentConfig.flowType != FlowType.fullMenu;
+              final List<MenuItem> displayItems =
+                  (isRecommendationFlow && !state.isExpanded)
+                  ? state.visibleItems.take(3).toList()
+                  : state.visibleItems;
+
               return SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
                   horizontal: horizontalPadding,
@@ -99,13 +103,13 @@ class _MenuScreenContent extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 32),
-                    if (state.visibleItems.isEmpty)
+                    if (displayItems.isEmpty)
                       MenuEmptyState(
                         onClearFilters: () {
                           menuCubit.selectCategory(MenuCategory.all);
                         },
                       )
-                    else
+                    else ...[
                       GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -115,17 +119,55 @@ class _MenuScreenContent extends StatelessWidget {
                           mainAxisSpacing: 24,
                           childAspectRatio: 0.85,
                         ),
-                        itemCount: state.visibleItems.length,
+                        itemCount: displayItems.length,
                         itemBuilder: (context, index) {
-                          return MenuItemCard(item: state.visibleItems[index]);
+                          return MenuItemCard(item: displayItems[index]);
                         },
                       ),
+                      if (isRecommendationFlow &&
+                          !state.isExpanded &&
+                          state.visibleItems.length > 3)
+                        _buildShowMoreButton(context, state),
+                    ],
                   ],
                 ),
               );
             },
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildShowMoreButton(BuildContext context, MenuState state) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 48),
+      child: Center(
+        child: GestureDetector(
+          onTap: () => context.read<MenuCubit>().toggleExpand(),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            decoration: BoxDecoration(
+              color: AppColors.accent.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Show more matches',
+                  style: TextStyle(
+                    color: AppColors.accent,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(Icons.keyboard_arrow_down, color: AppColors.accent),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

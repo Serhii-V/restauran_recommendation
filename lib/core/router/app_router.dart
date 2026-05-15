@@ -10,6 +10,7 @@ import '../../features/flow_selection/presentation/flow_selection_screen.dart';
 import '../../features/questionnaire/presentation/screens/questionnaire_screen.dart';
 
 import '../../features/menu/presentation/screens/menu_screen.dart';
+import '../../features/menu/presentation/screens/menu_item_details_screen.dart';
 import '../di/injection_container.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -36,18 +37,24 @@ final appRouter = GoRouter(
         );
       },
     ),
-    GoRoute(
-      path: '/menu',
-      builder: (context, state) {
-        return MultiBlocProvider(
-          providers: [
-            // BlocProvider(create: (_) => sl<FlowSelectionCubit>()),
-            BlocProvider(create: (_) => sl<MenuCubit>()),
+    ShellRoute(
+      builder: (context, state, child) =>
+          BlocProvider(create: (_) => sl<MenuCubit>()..init(), child: child),
+      routes: [
+        GoRoute(
+          path: '/menu',
+          builder: (context, state) => const MenuScreen(),
+          routes: [
+            GoRoute(
+              path: 'item/:id',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return MenuItemDetailsScreen(itemId: id);
+              },
+            ),
           ],
-
-          child: MenuScreen(),
-        );
-      },
+        ),
+      ],
     ),
   ],
 );

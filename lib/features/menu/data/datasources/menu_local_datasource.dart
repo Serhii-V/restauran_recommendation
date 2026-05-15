@@ -5,6 +5,7 @@ import '../../domain/entities/menu_item.dart';
 
 abstract class MenuLocalDataSource {
   Future<List<MenuItem>> getMenuItems();
+  Future<MenuItem?> getMenuItemById(String id);
 }
 
 class MenuLocalDataSourceImpl implements MenuLocalDataSource {
@@ -17,5 +18,15 @@ class MenuLocalDataSourceImpl implements MenuLocalDataSource {
     return data
         .map((item) => MenuItemDto.fromJson(item as Map<String, dynamic>))
         .toList();
+  }
+
+  @override
+  Future<MenuItem?> getMenuItemById(String id) async {
+    final items = await getMenuItems();
+    try {
+      return items.firstWhere((item) => item.id == id);
+    } catch (e) {
+      return null;
+    }
   }
 }

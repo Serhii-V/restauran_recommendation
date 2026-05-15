@@ -10,16 +10,47 @@ enum MenuCategory {
   const MenuCategory(this.label);
 }
 
-enum SpiceLevel { none, medium, hot }
+enum SpiceLevel {
+  none('No spice'),
+  medium('Medium'),
+  hot('Hot');
+
+  final String label;
+  const SpiceLevel(this.label);
+}
 
 enum PortionSize {
-  small,
-  regular,
-  large,
-} //snack, light, regular, filling, feast }
+  small('Small'),
+  regular('Regular'),
+  large('Large');
 
-enum MealStyle { classic, adventurous }
+  final String label;
+  const PortionSize(this.label);
+}
 
-enum PrepTime { quick, normal, long }
+enum MealStyle {
+  classic('Classic'),
+  adventurous('Adventurous');
 
-enum HealthGoal { highProtein, lowSugar, balanced, tasty }
+  final String label;
+  const MealStyle(this.label);
+}
+
+enum PrepTime {
+  quick('Quick'),
+  normal('Normal'),
+  long('Slow');
+
+  final String label;
+  const PrepTime(this.label);
+}
+
+enum HealthGoal {
+  highProtein('High Protein'),
+  lowSugar('Low Sugar'),
+  balanced('Balanced'),
+  tasty('Tasty');
+
+  final String label;
+  const HealthGoal(this.label);
+}

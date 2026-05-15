@@ -15,10 +15,10 @@ class SpiceIndicator extends StatelessWidget {
         activeBars = 0;
         break;
       case SpiceLevel.medium:
-        activeBars = 2;
+        activeBars = 1;
         break;
       case SpiceLevel.hot:
-        activeBars = 3;
+        activeBars = 2;
         break;
     }
 

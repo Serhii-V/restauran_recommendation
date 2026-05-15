@@ -23,12 +23,14 @@ class MenuCubit extends Cubit<MenuState> {
     try {
       final items = await repository.getMenuItems();
       final FlowPreferencesModel currentConfig = configRepository.currentConfig;
+      final isExpanded = currentConfig.flowType == FlowType.fullMenu;
 
       emit(
         state.copyWith(
           allItems: items,
           isLoading: false,
           currentConfig: currentConfig,
+          isExpanded: isExpanded,
         ),
       );
 
@@ -56,6 +58,10 @@ class MenuCubit extends Cubit<MenuState> {
       ),
     );
     applyFilters();
+  }
+
+  void toggleExpand() {
+    emit(state.copyWith(isExpanded: !state.isExpanded));
   }
 
   void applyFilters() {
