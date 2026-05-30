@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../features/questionnaire/domain/models/questionnaire_models.dart';
+
 class FlowPreferencesModel extends Equatable {
   final Set<DietaryPreference> dietaryPreferences;
   final Set<MajorAllergen> majorAllergens;
   final FlowType flowType;
-  final Map<String, String> answers;
+  final Map<String, QuestionOption> answers;
 
   const FlowPreferencesModel({
     this.dietaryPreferences = const {},
@@ -17,7 +19,7 @@ class FlowPreferencesModel extends Equatable {
     Set<DietaryPreference>? dietaryPreferences,
     Set<MajorAllergen>? majorAllergens,
     FlowType? flowType,
-    Map<String, String>? answers,
+    Map<String, QuestionOption>? answers,
   }) {
     return FlowPreferencesModel(
       dietaryPreferences: dietaryPreferences ?? this.dietaryPreferences,
@@ -53,7 +55,7 @@ enum DietaryPreference {
 }
 
 enum MajorAllergen {
-  milkDairy('Milk / Dairy'),
+  dairy('Dairy'),
   eggs('Eggs'),
   wheat('Wheat'),
   gluten('Gluten'),

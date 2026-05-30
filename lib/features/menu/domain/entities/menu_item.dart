@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import '../../../../core/data/models/flow_preferences_model.dart';
 import '../enums/menu_enums.dart';
+import 'menu_tags.dart';
 
 class MenuItem extends Equatable {
   final String id;
@@ -12,15 +13,8 @@ class MenuItem extends Equatable {
 
   final Set<DietaryPreference> dietaryPreferences;
   final Set<MajorAllergen> allergens;
-
-  final SpiceLevel spiceLevel;
-  final PortionSize portionSize;
-  final MealStyle mealStyle;
-  final Set<HealthGoal> healthGoals;
-
-  final bool kidsFriendly;
-  final PrepTime prepTime;
-
+  final List<String> mealStyle;
+  final MenuTags tags;
   final List<String> badges;
 
   const MenuItem({
@@ -32,12 +26,8 @@ class MenuItem extends Equatable {
     required this.category,
     required this.dietaryPreferences,
     required this.allergens,
-    required this.spiceLevel,
-    required this.portionSize,
     required this.mealStyle,
-    required this.healthGoals,
-    required this.kidsFriendly,
-    required this.prepTime,
+    required this.tags,
     required this.badges,
   });
 
@@ -51,12 +41,8 @@ class MenuItem extends Equatable {
     category,
     dietaryPreferences,
     allergens,
-    spiceLevel,
-    portionSize,
     mealStyle,
-    healthGoals,
-    kidsFriendly,
-    prepTime,
+    tags,
     badges,
   ];
 }
