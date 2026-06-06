@@ -6,6 +6,10 @@ import '../../features/menu/domain/repositories/menu_repository.dart';
 import '../../features/menu/domain/usecases/recommendation_service.dart';
 import '../../features/menu/presentation/cubit/menu_cubit.dart';
 import '../../features/preferences/presentation/cubit/recommendation_context_cubit.dart';
+import '../../features/questionnaire/data/datasource/questionnaire_local_datasource.dart';
+import '../../features/questionnaire/data/repository/questionnaire_repository.dart';
+import '../../features/questionnaire/domain/repository/questionnaire_repository.dart';
+import '../../features/questionnaire/domain/usecases/get_questionnaire_flow_use_case.dart';
 import '../../features/questionnaire/presentation/cubit/questionnaire_cubit.dart';
 import '../data/repositories/app_config_repository_impl.dart';
 import '../domain/repositories/app_config_repository.dart';
@@ -37,5 +41,26 @@ Future<void> init() async {
       recommendationService: sl(),
     ),
   );
-  sl.registerFactory(() => QuestionnaireCubit(configRepository: sl()));
+
+  // Questionnaire
+  sl.registerLazySingleton<QuestionnaireLocalDataSource>(
+    () => QuestionnaireLocalDataSourceImpl(),
+  );
+
+  sl.registerLazySingleton<QuestionnaireRepository>(
+    () => QuestionnaireRepositoryImpl(localDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<GetQuestionnaireFlowUseCase>(
+    () => GetQuestionnaireFlowUseCase(repository: sl()),
+  );
+
+  sl.registerFactory(
+    () => QuestionnaireCubit(
+      configRepository: sl(),
+      getQuestionnaireFlowUseCase: GetQuestionnaireFlowUseCase(
+        repository: sl(),
+      ),
+    ),
+  );
 }

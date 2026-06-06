@@ -27,13 +27,20 @@ class QuestionnaireScreen extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        final currentQuestion = state.flow.questions[state.currentStepIndex];
+        if (state.isLoading || state.flow == null) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final flow = state.flow!;
+        final currentQuestion = flow.questions[state.currentStepIndex];
 
         return Scaffold(
           appBar: AppBar(
             toolbarHeight: 80,
             backgroundColor: flowType.toFlowColor.withValues(alpha: 0.1),
-            title: Text(state.flow.title),
+            title: Text(flow.title),
             leading: InkWell(
               child: Container(
                 padding: EdgeInsets.all(24),
@@ -58,7 +65,7 @@ class QuestionnaireScreen extends StatelessWidget {
                   vertical: 16,
                 ),
                 child: QuestionnaireProgress(
-                  totalSteps: state.flow.questions.length,
+                  totalSteps: flow.questions.length,
                   currentStep: state.currentStepIndex,
                   activeColor: flowType.toFlowColor,
                 ),
@@ -94,7 +101,7 @@ class QuestionnaireScreen extends StatelessWidget {
                             const SizedBox(height: 48),
                             ...currentQuestion.options.map((option) {
                               return AppOptionCard(
-                                title: option,
+                                title: option.label,
                                 onTap: () => context
                                     .read<QuestionnaireCubit>()
                                     .selectAnswer(option),

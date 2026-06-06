@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restauran_recommendation/features/menu/domain/enums/menu_enums.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/menu_item.dart';
 import '../cubit/menu_cubit.dart';
@@ -145,12 +146,14 @@ class MenuItemDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
-            Text(
-              '\$${item.price.toStringAsFixed(0)}',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineLarge?.copyWith(color: AppColors.accent),
-            ),
+            item.price != 0.0
+                ? Text(
+                    '\$${item.price.toStringAsFixed(0)}',
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                      color: AppColors.accent,
+                    ),
+                  )
+                : const SizedBox.shrink(),
           ],
         ),
         const SizedBox(height: 16),
@@ -176,22 +179,22 @@ class MenuItemDetailsScreen extends StatelessWidget {
             icon: Icons.category_outlined,
           ),
           MenuItemAttributeChip(
-            label: item.portionSize.label,
+            label: item.tags.portionSize.label,
             icon: Icons.restaurant_menu,
           ),
           MenuItemAttributeChip(
-            label: item.spiceLevel.label,
+            label: item.tags.spiceLevel.label,
             icon: Icons.whatshot,
-            color: item.spiceLevel.index > 0
+            color: item.tags.spiceLevel.index > 0
                 ? AppColors.spiceIndicatorColor
                 : null,
           ),
           MenuItemAttributeChip(
-            label: item.mealStyle.label,
+            label: item.mealStyle.join(', '),
             icon: Icons.style_outlined,
           ),
           MenuItemAttributeChip(
-            label: item.prepTime.label,
+            label: item.tags.prepTime.label,
             icon: Icons.timer_outlined,
           ),
         ],
@@ -251,11 +254,11 @@ class MenuItemDetailsScreen extends StatelessWidget {
       content: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (item.healthGoals.isNotEmpty) ...[
+          if (item.tags.healthGoals.isNotEmpty) ...[
             Wrap(
               spacing: 12,
               runSpacing: 12,
-              children: item.healthGoals.map((goal) {
+              children: item.tags.healthGoals.map((goal) {
                 return MenuItemAttributeChip(
                   label: goal.label,
                   icon: Icons.health_and_safety_outlined,
@@ -266,11 +269,13 @@ class MenuItemDetailsScreen extends StatelessWidget {
             const SizedBox(width: 16),
           ],
           MenuItemAttributeChip(
-            label: item.kidsFriendly
-                ? 'Kids Friendly: Yes'
-                : 'Kids Friendly: No',
-            icon: item.kidsFriendly ? Icons.child_care : Icons.person_outline,
-            color: item.kidsFriendly ? AppColors.kidsModeFlowColor : null,
+            label: 'Kids Friendly: ${item.tags.kidsFriendly.label}',
+            icon: item.tags.kidsFriendly == KidsFriendly.yes
+                ? Icons.child_care
+                : Icons.person_outline,
+            color: item.tags.kidsFriendly == KidsFriendly.yes
+                ? AppColors.kidsModeFlowColor
+                : null,
           ),
         ],
       ),

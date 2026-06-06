@@ -1,66 +1,91 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/data/models/flow_preferences_model.dart';
 import '../../../../core/domain/repositories/app_config_repository.dart';
 import '../../domain/models/questionnaire_models.dart';
-import '../../domain/flows/questionnaire_flows.dart';
+import '../../domain/usecases/get_questionnaire_flow_use_case.dart';
 
 class QuestionnaireState extends Equatable {
-  final QuestionnaireFlow flow;
+  final QuestionnaireFlow? flow;
   final int currentStepIndex;
-  final Map<String, String> answers;
+  final Map<String, QuestionOption> answers;
   final bool isCompleted;
+  final bool isLoading;
+  final String? errorMessage;
 
   const QuestionnaireState({
-    required this.flow,
+    this.flow,
     this.currentStepIndex = 0,
     this.answers = const {},
     this.isCompleted = false,
+    this.isLoading = false,
+    this.errorMessage,
   });
 
   QuestionnaireState copyWith({
     QuestionnaireFlow? flow,
     int? currentStepIndex,
-    Map<String, String>? answers,
+    Map<String, QuestionOption>? answers,
     bool? isCompleted,
+    bool? isLoading,
+    String? errorMessage,
   }) {
     return QuestionnaireState(
       flow: flow ?? this.flow,
       currentStepIndex: currentStepIndex ?? this.currentStepIndex,
       answers: answers ?? this.answers,
       isCompleted: isCompleted ?? this.isCompleted,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [flow, currentStepIndex, answers, isCompleted];
+  List<Object?> get props => [
+    flow,
+    currentStepIndex,
+    answers,
+    isCompleted,
+    isLoading,
+    errorMessage,
+  ];
 }
 
 class QuestionnaireCubit extends Cubit<QuestionnaireState> {
   final AppConfigRepository configRepository;
+  final GetQuestionnaireFlowUseCase getQuestionnaireFlowUseCase;
 
-  QuestionnaireCubit({required this.configRepository})
-    : super(
-        QuestionnaireState(
-          flow: QuestionnaireFlows.allFlows[FlowType.kidsMode]!,
-        ),
-      ) {
-    _loadInitialPreferences();
+  QuestionnaireCubit({
+    required this.configRepository,
+    required this.getQuestionnaireFlowUseCase,
+  }) : super(const QuestionnaireState()) {
+    loadFlow();
   }
 
-  void _loadInitialPreferences() {
-    final currentConfig = configRepository.currentConfig;
-    final QuestionnaireFlow flow =
-        QuestionnaireFlows.allFlows[currentConfig.flowType]!;
-    emit(QuestionnaireState(flow: flow));
+  Future<void> loadFlow() async {
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      final currentConfig = configRepository.currentConfig;
+      final flow = await getQuestionnaireFlowUseCase(currentConfig.flowType);
+
+      emit(QuestionnaireState(flow: flow, isLoading: false));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
   }
 
-  void selectAnswer(String answer) {
-    final currentQuestion = state.flow.questions[state.currentStepIndex];
-    final newAnswers = Map<String, String>.from(state.answers);
-    newAnswers[currentQuestion.id] = answer;
+  void selectAnswer(QuestionOption option) {
+    final flow = state.flow;
 
-    if (state.currentStepIndex < state.flow.questions.length - 1) {
+    if (flow == null) {
+      return;
+    }
+    final currentQuestion = flow.questions[state.currentStepIndex];
+
+    final newAnswers = Map<String, QuestionOption>.from(state.answers);
+    newAnswers[currentQuestion.id] = option;
+
+    if (state.currentStepIndex < flow.questions.length - 1) {
       emit(
         state.copyWith(
           answers: newAnswers,
@@ -71,6 +96,7 @@ class QuestionnaireCubit extends Cubit<QuestionnaireState> {
       final finalConfig = configRepository.currentConfig.copyWith(
         answers: newAnswers,
       );
+
       configRepository.setConfig(finalConfig);
       emit(state.copyWith(answers: newAnswers, isCompleted: true));
     }

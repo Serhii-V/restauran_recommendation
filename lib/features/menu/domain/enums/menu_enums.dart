@@ -28,14 +28,6 @@ enum PortionSize {
   const PortionSize(this.label);
 }
 
-enum MealStyle {
-  classic('Classic'),
-  adventurous('Adventurous');
-
-  final String label;
-  const MealStyle(this.label);
-}
-
 enum PrepTime {
   quick('Quick'),
   normal('Normal'),
@@ -53,4 +45,13 @@ enum HealthGoal {
 
   final String label;
   const HealthGoal(this.label);
+}
+
+enum KidsFriendly {
+  yes('Yes'),
+  maybe('Maybe'),
+  no('No');
+
+  final String label;
+  const KidsFriendly(this.label);
 }

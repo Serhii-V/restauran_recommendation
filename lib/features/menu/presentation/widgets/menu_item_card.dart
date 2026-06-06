@@ -66,12 +66,13 @@ class MenuItemCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      Text(
-                        '\$${item.price.toStringAsFixed(0)}',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: AppColors.accent,
-                        ),
-                      ),
+                      item.price != 0.0
+                          ? Text(
+                              '\$${item.price.toStringAsFixed(0)}',
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(color: AppColors.accent),
+                            )
+                          : SizedBox.shrink(),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -84,7 +85,9 @@ class MenuItemCard extends StatelessWidget {
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [SpiceIndicator(spiceLevel: item.spiceLevel)],
+                    children: [
+                      SpiceIndicator(spiceLevel: item.tags.spiceLevel),
+                    ],
                   ),
                 ],
               ),

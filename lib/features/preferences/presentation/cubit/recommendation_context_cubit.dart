@@ -2,10 +2,11 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/data/models/flow_preferences_model.dart';
+import '../../../questionnaire/domain/models/questionnaire_models.dart';
 
 class RecommendationContext extends Equatable {
   final FlowType? flowType;
-  final Map<String, String> answers;
+  final Map<String, QuestionOption> answers;
 
   const RecommendationContext({this.flowType, this.answers = const {}});
 
@@ -16,7 +17,10 @@ class RecommendationContext extends Equatable {
 class RecommendationContextCubit extends Cubit<RecommendationContext> {
   RecommendationContextCubit() : super(const RecommendationContext());
 
-  void updateContext({FlowType? flowType, Map<String, String>? answers}) {
+  void updateContext({
+    FlowType? flowType,
+    Map<String, QuestionOption>? answers,
+  }) {
     emit(
       RecommendationContext(
         flowType: flowType ?? state.flowType,

@@ -1,0 +1,179 @@
+{
+  "flows": [
+    {
+      "flow_id": "pickForMe",
+      "title": "Pick For Me",
+      "icon": "assets/icons/pick_for_me_icon.png",
+      "questions": [
+        {
+          "question_id": "p1",
+          "title": "Do you want something...",
+          "options": [
+            {
+              "label": "Classic",
+              "impact": { "mealStyle": { "classic": 15 } }
+            },
+            {
+              "label": "Adventurous",
+              "impact": { "mealStyle": { "adventurous": 15 } }
+            }
+          ]
+        },
+        {
+          "question_id": "p2",
+          "title": "Do you like spicy food?",
+          "options": [
+            {
+              "label": "Yes",
+              "impact": { "spiceLevel": { "hot": 20, "medium": 5, "none": -15 } }
+            },
+            {
+              "label": "A little",
+              "impact": { "spiceLevel": { "medium": 15, "hot": 5, "none": 5 } }
+            },
+            {
+              "label": "No",
+              "impact": { "spiceLevel": { "none": 20, "hot": -30 } }
+            }
+          ]
+        },
+        {
+          "question_id": "p3",
+          "title": "Surprise me?",
+          "options": [
+            {
+              "label": "Yes",
+              "impact": { "mealStyle": { "adventurous": 20, "classic": -10, "flavorful": 20 } }
+            },
+            {
+              "label": "Pick something safe",
+              "impact": { "mealStyle": { "classic": 20, "safe choice": 20  }, "spiceLevel": { "none": 20, "medium": 10 } }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "flow_id": "eatHealthier",
+      "title": "Health Mode",
+      "icon": "assets/icons/eat_healthier_icon.png",
+      "questions": [
+        {
+          "question_id": "h1",
+          "title": "What are you prioritizing today?",
+          "options": [
+            {
+              "label": "High protein",
+              "impact": { "mealStyle": { "healthy": 20}, "healthGoals": { "highProtein": 20 } }
+            },
+            {
+              "label": "Low sugar",
+              "impact": {"mealStyle": { "healthy": 20}, "healthGoals": { "lowSugar": 20, "balanced": 10 } }
+            },
+            {
+              "label": "Balanced",
+              "impact": {"mealStyle": { "healthy": 20}, "healthGoals": { "balanced": 20 } }
+            },
+            {
+              "label": "Just something tasty",
+              "impact": {"mealStyle": { "healthy": 20}, "healthGoals": { "tasty": 20 , "lowSugar": 5, "balanced": 5} }
+            }
+          ]
+        },
+        {
+          "question_id": "h2",
+          "title": "What kind of meal do you want?",
+          "options": [
+            {
+              "label": "Light",
+              "impact": { "portionSize": { "small": 15, "regular": 10, "large": -15 } }
+            },
+            {
+              "label": "Filling",
+              "impact": { "portionSize": { "large": 20, "regular": 10, "small": -15 } }
+            },
+            {
+              "label": "I don’t care",
+              "impact": { "portionSize": { "large": 5, "regular": 10, "small": 5 } }
+            }
+          ]
+        },
+        {
+          "question_id": "h3",
+          "title": "Are you in a rush?",
+          "options": [
+            {
+              "label": "Yes, quick pick",
+              "impact": { "prepTime": { "quick": 20, "normal": 5,  "long": -20 } }
+            },
+            {
+              "label": "I've got time",
+              "impact": { "prepTime": { "quick": 5, "normal": 10,  "long": 5 } }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "flow_id": "kidsMode",
+      "title": "Kids Mode",
+      "icon": "assets/icons/kids_mode_icon.png",
+      "questions": [
+        {
+          "question_id": "k1",
+          "title": "What kind of food sounds good?",
+          "options": [
+            {
+              "label": "Simple & Mild",
+              "impact": {"mealStyle": { "simple": 20}, "kidsFriendly": { "yes": 20, "no": -30 }, "spiceLevel": { "none": 15, "medium": 10 } }
+            },
+            {
+              "label": "Fun & Tasty",
+              "impact": {"kidsFriendly": { "yes": 20, "no": -30}, "healthGoals": { "tasty": 15 } }
+            },
+            {
+              "label": "Light & Fresh",
+              "impact": { "kidsFriendly": { "yes": 20, "no": -30 }, "portionSize": { "large": -15 } }
+            }
+          ]
+        },
+        {
+          "question_id": "k2",
+          "title": "How hungry are they?",
+          "options": [
+            {
+              "label": "Just a little",
+              "impact": { "portionSize": { "small": 20, "regular": 15 } }
+            },
+            {
+              "label": "Regular meal",
+              "impact": { "portionSize": { "regular": 20 } }
+            },
+            {
+              "label": "Very hungry",
+              "impact": { "portionSize": { "large": 20 } }
+            }
+          ]
+        },
+        {
+          "question_id": "k3",
+          "title": "Any spice?",
+          "options": [
+            {
+              "label": "No spice",
+              "impact": { "spiceLevel": { "none": 20, "hot": -35 } }
+            },
+            {
+              "label": "A little",
+              "impact": { "spiceLevel": { "medium": 20, "none": 5, "hot": -15 } }
+            },
+            {
+              "label": "Doesn’t matter",
+              "impact": { "spiceLevel": { "medium": 5 } }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
